@@ -20,17 +20,16 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    accountType: {
+    role: {
         type: String,
         enum: ["Admin", "User"],
         required: true,
         trim: true,
     },
-    additionalDetails: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: "Profile",
-    },
+    image: {
+        type: String,
+        required: true
+    }
 });
 
 module.exports = mongoose.model("User", userSchema);
