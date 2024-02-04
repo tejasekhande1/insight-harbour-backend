@@ -247,3 +247,43 @@ exports.getProductsByBrandName = async (req, res) => {
         });
     }
 };
+
+exports.getTopRatedProducts = async (req, res) => {
+    try {
+        const aggregationPipeline = [
+            {
+                $match: { reviews: { $exists: true, $ne: [] } }
+            },
+            {
+                $unwind: '$reviews'
+            },
+            {
+                $group: {
+                    _id: '$_id',
+                    averageRating: { $avg: '$reviews.rating' }
+                }
+            },
+            {
+                $sort: { averageRating: -1 }
+            },
+            {
+                $limit: 10
+            }
+        ];
+
+        const topProducts = await Product.aggregate(aggregationPipeline);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Top rated products retrieved successfully',
+            data: topProducts
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve top rated products',
+            error: error.message
+        });
+    }
+};
